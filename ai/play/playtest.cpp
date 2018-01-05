@@ -24,7 +24,8 @@ void PlayTest::initRole()
 void PlayTest::execute()
 {//---////////////////////////////////////////////////////
         wm->debug_pos.clear();
-        tactics[1] =testStop;
+        tactics[1] = testStop;
+        tactics[3] = testStop;
 //        tactics[6] = test;
 //        if(wm->gs == STATE_Stop){
 //            wm->ourRobot[6].Status = AgentStatus::FollowingBall;
