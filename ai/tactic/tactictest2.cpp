@@ -18,7 +18,7 @@ RobotCommand TacticTest2::getCommand()
     if(!wm->ourRobot[id].isValid) return rc;
     rc.fin_pos.dir = (wm->ball.pos.loc - wm->ourRobot[id].pos.loc).dir().radian();
     int speed = 4;
-    int real = 40;
+    int real = 30;
     int reciver;
     if(id == 1) reciver = 3;
     else if(id == 3) reciver = 1;
@@ -61,10 +61,10 @@ RobotCommand TacticTest2::getCommand()
             rc.useNav = false;
             rc.isBallObs = false;
             atTheBall.intersection(reciveriToBall, &intersect1, &intersect2);
-            if((intersect1 - penaltiSpot).length() < (intersect2 - penaltiSpot).length()) target = intersect1;
+            if((intersect1 - Vector2D(penaltiSpot.x, (penaltiSpot.y*3)/2)).length() < (intersect2 - Vector2D(penaltiSpot.x, (penaltiSpot.y*3)/2)).length()) target = intersect1;
             else target = intersect2;
             if((wm->ball.pos.loc - wm->ourRobot[id].pos.loc).length() > 250) state = 0;
-            if(wm->kn->ReachedToPos(wm->ourRobot[id].pos.loc, target, 25)) state = 2;
+            if(wm->kn->ReachedToPos(wm->ourRobot[id].pos.loc, target, 15)) state = 2;
             break;
         case 2:
             qDebug() << "dar sharte sevom";
