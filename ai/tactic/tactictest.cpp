@@ -18,7 +18,7 @@ RobotCommand TacticTest::getCommand()
     RobotCommand rc;
     if(!wm->ourRobot[id].isValid) return rc;
     int speed = 4;
-    int real = -100;
+    int real = 20;
     wm->ourRobot[id].Status = AgentStatus::RecievingPass;
     Vector2D space(1000,0);
     Vector2D ourPenaltiSpot(-2500,-2250);
@@ -48,7 +48,7 @@ RobotCommand TacticTest::getCommand()
         case 0:
             rc.useNav = true;
             rc.isBallObs = true;
-            target = wm->ball.pos.loc + Vector2D(0,ID*250);
+            target = wm->ball.pos.loc + Vector2D(0,ID*150);
             qDebug() << "varede sharte beine pnolti target x="<< target.x << " y=" << target.y;
             if(wm->kn->ReachedToPos(wm->ourRobot[id].pos.loc, target, 50))
                 state = 1;
