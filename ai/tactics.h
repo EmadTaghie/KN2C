@@ -13,6 +13,7 @@
 #include "tactic/tactictest.h"
 #include "tactic/tactictest2.h"
 #include "tactic/tactictest3.h"
+#include "tactic/tacticteststop.h"
 #include "tactic/tactictestkickprecision.h"
 #include "tactic/tactictestfriction.h"
 #include "tactic/tacticfixedpos.h"
