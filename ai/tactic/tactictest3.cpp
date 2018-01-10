@@ -1,132 +1,267 @@
 #include "tactictest3.h"
+#include "game_state.h"
+#define Radius 500
 TacticTest3::TacticTest3(WorldModel *worldmodel, QObject *parent) :
     Tactic("TacticTest3", worldmodel, parent)
 {
     //sTest = new SkillKick(wm);
-    state=0;
+    flag=0;
+    state=-1;
+    x=-500;
+    y=0;
+    opRobot[6]={0};
+
 }
 RobotCommand TacticTest3::getCommand()
 {
     RobotCommand rc;
     if(!wm->ourRobot[id].isValid) return rc;
-    int sectionLengthY, sectionLengthX, i, index;
-    int counter = 0;
-        Line2D golieGreneralLine (Field::ourGoalPost_L , Field::ourGoalPost_R);
-                Line2D ballMoveMent (wm->ball.pos.loc , wm->ball.pos_predicted.loc);
-                Line2D lineR (wm->ball.pos.loc , Field::ourGoalPost_R);
-                Line2D lineL (wm->ball.pos.loc , Field::ourGoalPost_L);
-                Circle2D dangerArea ((Field::ourGoalPost_L + Field::ourGoalPost_R)/2 , 600);
-                Vector2D intersectPointL1 , intersectPointL2 , intersectPointR1 , intersectPointR2 , intersectGolieGeneral;
-                Vector2D goalPoints[20][2];
-                Vector2D sumVect(0,0);
-                intersectGolieGeneral = ballMoveMent.intersection(golieGreneralLine);
-                for(i=0; i < 20; i++) goalPoints[i][1] = Vector2D(1,1);
-                if(wm->ball.pos.loc.x > Field::ourGoalCenter.x){
-                    if(/*(wm->ball.pos.loc - Field::ourGoalCenter).length() < 600*/wm->kn->IsInsideGolieArea(wm->ball.pos.loc) && wm->ball.vel.loc.length() < 0.7){
-                        switch (state){
-                        case 0:
-                            rc.useNav =true;
-                            target = wm->ball.pos.loc + Vector2D(-150 ,0);
-                            if((wm->ourRobot[id].pos.loc - target).length() < 50)
-                                state = 1;
-         //                    qDebug() << "dar halate aval";
-                            break;
-                        case 1:
-                            rc.useNav = false;
-                            target = wm->ball.pos.loc - Vector2D(BALL_RADIUS + ROBOT_RADIUS, 0);
-                            qDebug() << "sorate toop" <<wm->ball.vel.loc.length();
-                            if((wm->ourRobot[id].pos.loc - target).length() < 100)
-                            state = 2;
-                            if((wm->ball.pos.loc - wm->ourRobot[id].pos.loc).length() > 150)
-                                state = 0;
-         //                    qDebug() << "dar halate dovom";
-                            break;
-                        case 2:
-                            rc.kickspeedx    = 10;
-                            qDebug() << "shooooooooot";
-                            if((wm->ball.pos.loc - wm->ourRobot[id].pos.loc).length() > 150){
-             //                    rc.kickspeedz = 0;
-                                qDebug() << "final";
-                                rc.kickspeedx = 0;
-                                state = 0;
-                            }
-         //                    qDebug() << "dar halate svom";
-                        }
-                    }
-                    else{
-                if(intersectGolieGeneral.y < Field::ourGoalPost_L.y && intersectGolieGeneral.y > Field::ourGoalPost_R.y &&
-                   wm->ball.vel.loc.dir().degree() < 0 &&
-                        intersectGolieGeneral.isValid() && wm->ball.vel.loc.length() > 0.2){
-                    Line2D goalieChangedLine(point1 , point2);
-                    target = goalieChangedLine.intersection(ballMoveMent);
-                }
-                else{
-                    dangerArea.intersection(lineR , &intersectPointR1 , &intersectPointR2);
-                    dangerArea.intersection(lineL , &intersectPointL1 , &intersectPointL2);
-                    if(intersectPointL1.x > intersectPointL2.x)
-                        point1 = intersectPointL1;
-                    else
-                        point1 = intersectPointL2;
-                    if(intersectPointR1.x > intersectPointR2.x)
-                        point2 = intersectPointR1;
-                    else
-                        point2 = intersectPointR2;
-                    if((wm->oppRobot[1].pos.loc - wm->ball.pos.loc).length() < 200 && (AngleDeg::rad2deg(wm->oppRobot[1].pos.dir) > 90 || AngleDeg::rad2deg(wm->oppRobot[1].pos.dir) < -90)){
-                        Line2D stopLine(wm->ball.pos.loc , wm->oppRobot[1].pos.loc);
-                        Line2D goalieChangedLine(point1 , point2);
-                        Vector2D stopPoint = stopLine.intersection(goalieChangedLine);
-                        if(stopPoint.y <point1.y && stopPoint.y >point2.y)
-                        target = stopPoint;
-                        else{
+    //sTest->execute(rc);
+//    if(flag==0)
+//    {
+//        rc.fin_pos.loc=Vector2D(-1500,-2500);
+//        if(wm->kn->ReachedToPos(wm->ourRobot[id].pos.loc,rc.fin_pos.loc,50 ))
+//            flag=1;
+//    }
+//    if(flag==1)
+//    {
+//        rc.fin_pos.loc=Vector2D(-1500,0);
+//        if(wm->kn->ReachedToPos(wm->ourRobot[id].pos.loc,rc.fin_pos.loc,50 ))
+//            flag=0;
+//    }
+    /*game mode1*/
 
-                        }
-         //                qDebug() <<"dar sharte aval";
-                        qDebug()<<" R pos : "<< wm->ourRobot[1].pos.loc.x << ", "<< wm->ourRobot[1].pos.loc.y;
-                            qDebug()<<"R pos.loc.dir : "<< wm->ourRobot[1].pos.loc.dir().degree(); //)<<" "<<wm->ball.pos.loc.y;
-                            qDebug()<<"R pos.dir : "<<AngleDeg::rad2deg(wm->ourRobot[1].pos.dir);
-                            qDebug()<<"Ball vel loc dir :" << wm->ball.vel.loc.dir().degree();
-                            qDebug()<<"Ball vel dir :" << wm->ball.vel.dir;
-                    }
-                    else
+    if(wm->gs==STATE_Halt)
+        qDebug()<<"Halt";
+    if(wm->gs==STATE_Start)
+        qDebug()<<"Start";
+    if(wm->gs==STATE_Free_kick_Our)
+        qDebug()<<"Our Free kick";
+    if(wm->gs==STATE_Stop)
+        qDebug()<<"Stop";
+    if(wm->gs==STATE_ForceStart)
+        qDebug()<<"Force Start";
+    if(wm->gs==STATE_Free_kick_Opp)
+        qDebug()<<"opp Free kick";
+    if(wm->gs==STATE_Free_kick_Our)
+        qDebug()<<"Our Free kick";
+    if(wm->gs==STATE_Indirect_Free_kick_Opp)
+        qDebug()<<"opp IndirectFree kick";
+    if(wm->gs==STATE_Indirect_Free_kick_Our)
+        qDebug()<<"Our Free kick";
+    if(wm->gs==STATE_Kick_off_Our)
+        qDebug()<<"Our Kick off";
+    if(wm->gs==STATE_Kick_off_Opp)
+        qDebug()<<"Opp Kick Off";
+    if(wm->gs==STATE_Penalty_Opp)
+        qDebug()<<"Opp Penalty";
+    if(wm->gs==STATE_Penalty_Our)
+        qDebug()<<"Our Penalty";
+
+    /*game mode2*/
+
+//    if(wm->cmgs.GameState::gameOn())
+//        qDebug()<<"Game On";
+//    else
+//        qDebug()<<"Game Stop";
+//    if(wm->cmgs.GameState::freeKick())
+//    {
+//        qDebug()<<"Free Kick";
+//        if(wm->cmgs.GameState::ourDirectKick())
+//        {
+//            qDebug()<<"Our Free Kick";
+//            if(wm->cmgs.GameState::directKick())
+//                qDebug()<<"Direct Kick";
+//            if(wm->cmgs.GameState::indirectKick())
+//                qDebug()<<"Direct InKick";
+//        }
+//        if(wm->cmgs.GameState::theirFreeKick())
+//        {
+//            qDebug()<<"Our Free Kick";
+//            if(wm->cmgs.GameState::directKick())
+//                qDebug()<<"Direct Kick";
+//            if(wm->cmgs.GameState::indirectKick())
+//                qDebug()<<"Direct InKick";
+//        }
+//    }
+//    if(wm->cmgs.GameState::kickoff())
+//        qDebug()<<"Kick Off";
+//    if(wm->cmgs.GameState::penaltyKick())
+//        qDebug()<<"Penalty Kick";
+//    if(wm->cmgs.GameState::timeout())
+//        qDebug()<<"Time Out";
+//    if(wm->cmgs.GameState::restart())
+//        qDebug()<<"Restart Game";
+//    if(!(wm->cmgs.GameState::canMove()))
+//        qDebug()<<"Halted";
+
+
+    /*Circle*/
+//    rc.useNav=false;
+//    Vector2D startPoint(-2600 ,-1500);
+//    if(state<0)
+//    {
+//        rc.fin_pos.loc=startPoint;
+//        if( wm->kn->ReachedToPos(wm->ourRobot[id].pos.loc,startPoint,50) )
+//            state=0;
+//    }
+//    if( (x<500) && (state==0) )
+//    {
+//        y=sqrt(Radius*Radius - x*x);
+//        rc.fin_pos.loc=Vector2D(x-2000,y-1500);
+//        if( wm->kn->ReachedToPos(wm->ourRobot[id].pos.loc,rc.fin_pos.loc,50) )
+//            x=x+100;
+//        if(x==500)
+//            state=1;
+//    }
+//    if( (x>=-500) && (state==1) )
+//    {
+//        y=-sqrt(Radius*Radius - x*x);
+//        rc.fin_pos.loc=Vector2D(x-2000,y-1500);
+//        if( wm->kn->ReachedToPos(wm->ourRobot[id].pos.loc,rc.fin_pos.loc,50) )
+//            x=x-100;
+//        if(x==-500)
+//            state=0;
+//    }
+ /*Darvaze*/
+        int count=0;
+        for(int i=0;i<=5;i++)
+            if(wm->oppRobot[i].isValid)
+                opRobot[i]=1;
+        rc.fin_pos.dir=(wm->ball.pos.loc - wm->ourRobot[id].pos.loc).dir().radian();
+
+        if(state>=0)
+        {
+            qDebug()<<"0 scop:";
+            if( ( wm->ball.pos.loc.x<Field::ourGoalCenter.x + 1000 )&& ( wm->ball.pos.loc.y<=Field::ourGoalPost_L.y + 1000 )
+                 && ( wm->ball.pos.loc.y>=Field::ourGoalPost_R.y - 1000 ) && ( (wm->ball.vel.loc.length() < 0.2 ) ) )
+            {
+                qDebug()<<"Shoot ";
+                rc.useNav=true;
+                rc.fin_pos.loc.y=wm->ball.pos.loc.y;
+                rc.fin_pos.loc.x=wm->ball.pos.loc.x - BALL_RADIUS*2 ;
+                rc.kickspeedx=10;
+            }
+            else if(wm->ball.vel.loc.length() < 0.2)
+            {
+                qDebug()<<"positioning ";
+                for(int i=0;i<=5;i++)
+                {
+                    if(wm->oppRobot[i].isValid)
                     {
-                        sectionLengthY = (point1.y - point2.y)/20;
-                        sectionLengthX = (point1.x - point2.x)/20;
-                        for(i = 0; i < 20; i++) goalPoints[i][0] = point2 + Vector2D(sectionLengthX*i, sectionLengthY*i);
-                        for(index = 1; index < 5; index++)
-                            for(i = 0; i < 20; i++){
-                                Ray2D targetRay(wm->ball.pos.loc, goalPoints[i][0]);
-                                Circle2D RobotCircle(wm->ourRobot[index].pos.loc, ROBOT_RADIUS);
-                                Vector2D RobotIntersect1, RobotIntersect2;
-                                RobotCircle.intersection(targetRay, &RobotIntersect1, &RobotIntersect2);
-                                if(RobotIntersect1 != Vector2D(0,0) || RobotIntersect2 != Vector2D(0,0))
-                                    goalPoints[i][1] = Vector2D(0,1);
-                            }
-                        for(i = 0; i < 20; i++)
-                        {
-                            qDebug() << "goal points "<<i<<" x = "<<goalPoints[i][1].x;
-                            if(goalPoints[i][1].x == 1){
-                                sumVect += goalPoints[i][0];
-                                counter++;
-                            }
-                        }
-                        target = sumVect/counter;
-
-                        qDebug() << "sum x =" <<sumVect.x<<" y ="<<sumVect.y;
-                         qDebug() <<"dar sharte dovom";
+                        opRobot[count]=i;
+                        count++;
                     }
                 }
+                if( (wm->oppRobot[opRobot[0]].isValid) && (wm->oppRobot[opRobot[1]].isValid) )
+                {
+                    Line2D upLine (wm->oppRobot[opRobot[0]].pos.loc , Field::ourGoalPost_L);
+                    Line2D downLine (wm->oppRobot[opRobot[1]].pos.loc , Field::ourGoalPost_R);
+                    Vector2D tu1,tu2,td1,td2,TU,TD;
+                    Field::ourDefenceCircle.intersection(upLine,&tu1,&tu2);
+                    if(tu1.x>tu2.x)
+                        TU=tu1;
+                    else TU=tu2;
+                    Field::ourDefenceCircle.intersection(downLine,&td1,&td2);
+                    if(td1.x>td2.x)
+                        TD=td1;
+                    else TD=td2;
+                    TDmid=(TD+Field::ourGoalPost_R)/2;
+                    TUmid=(TU+Field::ourGoalPost_L)/2;
+                    Vector2D newGoalCenter=(TDmid+TUmid)/2;
+                    rc.fin_pos.loc=newGoalCenter;
                 }
+                else    if(wm->oppRobot[opRobot[0]].isValid)
+                {
+                    Line2D upLine (wm->oppRobot[opRobot[0]].pos.loc , Field::ourGoalPost_L);
+                    Line2D downLine (wm->oppRobot[opRobot[0]].pos.loc , Field::ourGoalPost_R);
+                    Vector2D tu1,tu2,td1,td2,TU,TD;
+                    Field::ourDefenceCircle.intersection(upLine,&tu1,&tu2);
+                    if(tu1.x>tu2.x)
+                        TU=tu1;
+                    else TU=tu2;
+                    Field::ourDefenceCircle.intersection(downLine,&td1,&td2);
+                    if(td1.x>td2.x)
+                        TD=td1;
+                    else TD=td2;
+                    TDmid=(TD+Field::ourGoalPost_R)/2;
+                    TUmid=(TU+Field::ourGoalPost_L)/2;
+                    Vector2D newGoalCenter=(TDmid+TUmid)/2;
+                    rc.fin_pos.loc=newGoalCenter;
                 }
-                if((wm->ball.pos.loc - wm->ourRobot[id].pos.loc).dir().degree() > -90 && (wm->ball.pos.loc - wm->ourRobot[id].pos.loc).dir().degree() < 90 ){
-                    rc.fin_pos.dir = (wm->ball.pos.loc - wm->ourRobot[id].pos.loc).dir().radian();
-         //            qDebug() << "dar sharte daraje aval  " << (wm->ball.pos.loc - wm->ourRobot[id].pos.loc).dir().degree();
+                else    if(wm->oppRobot[opRobot[1]].isValid)
+                {
+                    Line2D upLine (wm->oppRobot[opRobot[1]].pos.loc , Field::ourGoalPost_L);
+                    Line2D downLine (wm->oppRobot[opRobot[1]].pos.loc , Field::ourGoalPost_R);
+                    Vector2D tu1,tu2,td1,td2,TU,TD;
+                    Field::ourDefenceCircle.intersection(upLine,&tu1,&tu2);
+                    if(tu1.x>tu2.x)
+                        TU=tu1;
+                    else TU=tu2;
+                    Field::ourDefenceCircle.intersection(downLine,&td1,&td2);
+                    if(td1.x>td2.x)
+                        TD=td1;
+                    else TD=td2;
+                    TDmid=(TD+Field::ourGoalPost_R)/2;
+                    TUmid=(TU+Field::ourGoalPost_L)/2;
+                    Vector2D newGoalCenter=(TDmid+TUmid)/2;
+                    rc.fin_pos.loc=newGoalCenter;
                 }
-                else{
-                    rc.fin_pos.dir = (wm->ball.pos.loc - Field::ourGoalCenter).dir().radian();
-         //            qDebug() << "dar sharte daraje dovom";
+                else rc.fin_pos.loc=Field::ourGoalCenter;
+            }
+            else if(wm->ball.vel.loc.length() > 0.2)
+            {
+                qDebug()<<"moving ball scop";
+                Line2D ballLine(wm->ball.pos.loc , wm->ball.pos_predicted.loc);
+                Line2D newGoalline(Field::ourGoalPost_L,Field::ourGoalPost_R);
+                fixedPoint=ballLine.intersection(newGoalline);
+                if( (fixedPoint.y<Field::ourGoalPost_L.y + 50)&&(fixedPoint.y>Field::ourGoalPost_R.y - 50)  )
+                {
+                    qDebug()<<"Moving to FixedPoint";
+                    rc.fin_pos.loc=fixedPoint;
                 }
-                rc.fin_pos.loc = target;
-                rc.maxSpeed = 4;
+                else
+                {
+                    qDebug()<<"FIXEDPOINT.Y="<<fixedPoint.y;
+                    Vector2D newGoalCenter=(TDmid+TUmid)/2;
+                    rc.fin_pos.loc=newGoalCenter;
+                }
+            }
+        }
+        rc.maxSpeed=4;
 
+
+    /*Passing*/
+//    if (wm->gs==STATE_Stop)
+//        rc.fin_pos.loc=Vector2D (-1500,0);
+//    else
+//    {
+//        if(wm->gs==STATE_Free_kick_Our)
+//        {
+//               qDebug()<<"State="<<state;
+//              rc.fin_pos.loc.x=wm->ball.pos.loc.x+BALL_RADIUS;
+//              rc.fin_pos.loc.y=wm->ball.pos.loc.y;
+//               rc.fin_pos.dir= (wm->ourRobot[2].pos.loc - wm->ourRobot[1].pos.loc).dir().radian();
+
+
+
+
+
+//        }
+//        if(wm->gs==STATE_Free_kick_Opp)
+//        {
+
+
+//        }
+//    }
     return rc;
 }
+//rc.fin_pos.dir=(rc.fin_pos.loc- wm->ourRobot[id].pos.loc).dir().radian();
+//Lineballmovement=(wm->ball.pos.loc , wm->ball.pos_predicted.loc
+/*
+        sKick->setIndex(this->id);
+        sKick->setTarget(target);
+        sKick->setKickType(true);
+        sKick->execute(rc);
+ */
+

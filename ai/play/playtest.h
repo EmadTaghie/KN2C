@@ -18,7 +18,6 @@ private:
     TacticTest *test;
     TacticTest2 *test2;
     TacticTest3 *test3;
-    tacticTestStop *testStop;
     ///////////////////////////
 };
 #endif // PLAYTEST_H

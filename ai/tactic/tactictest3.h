@@ -9,7 +9,10 @@ public:
     virtual RobotCommand getCommand();
 
 private:
-    Vector2D point1, point2, target;
+    Vector2D TDmid,TUmid,fixedPoint;
     int state,flag;
+    int angle;
+    int x,y;
+    int opRobot[6]={0};
 };
 #endif // TACTICTEST3_H
