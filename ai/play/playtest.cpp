@@ -11,11 +11,11 @@ PlayTest::PlayTest(WorldModel *worldmodel, QObject *parent) :
 
 int PlayTest::enterCondition()
 {
-//    if(wm->gs == STATE_Stop)
-//    return 120000;
-//    else
-//        return 0;
-    return 1000000;
+    if(wm->gs == STATE_Stop)
+    return 120000;
+    else
+        return 0;
+//    return 1000000;
 }
 
 void PlayTest::initRole()
@@ -26,8 +26,8 @@ void PlayTest::execute()
 {//---////////////////////////////////////////////////////
         wm->debug_pos.clear();
 
-//        tactics[1] = testStop;
-//        tactics[3] = testStop;
-        tactics[1] = test3;
-        tactics[3] = test2;
+        tactics[1] = testStop;
+        tactics[3] = testStop;
+//        tactics[1] = test3;
+//        tactics[3] = test2;
 }

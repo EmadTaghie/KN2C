@@ -14,10 +14,10 @@ PlayTest2::PlayTest2(WorldModel *worldmodel, QObject *parent) :
 
 int PlayTest2::enterCondition()
 {
-//    if(wm->gs == STATE_Stop)
+    if(wm->gs == STATE_Stop)
     return 0;
-//    else
-//        return 120000;
+    else
+        return 120000;
 }
 
 void PlayTest2::initRole()
