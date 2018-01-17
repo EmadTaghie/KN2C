@@ -25,17 +25,17 @@ void PlayTest::initRole()
 void PlayTest::execute()
 {//---////////////////////////////////////////////////////
         wm->debug_pos.clear();
-        tactics[1] = test;
-        tactics[3] = test;
-        if(wm->ball.pos.loc.y < 0){
-            wm->ourRobot[1].Status = AgentStatus::Kicking;
-            wm->ourRobot[3].Status = AgentStatus::RecievingPass;
-        }
-        if(wm->ball.pos.loc.y > 0){
-            wm->ourRobot[1].Status = AgentStatus::RecievingPass;
-            wm->ourRobot[3].Status = AgentStatus::Kicking;
-        }
-//        tactics[0] = test3; //for goali
+//        tactics[1] = test;
+//        tactics[3] = test;
+//        if(wm->ball.pos.loc.y < 0){
+//            wm->ourRobot[1].Status = AgentStatus::Kicking;
+//            wm->ourRobot[3].Status = AgentStatus::RecievingPass;
+//        }
+//        if(wm->ball.pos.loc.y > 0){
+//            wm->ourRobot[1].Status = AgentStatus::RecievingPass;
+//            wm->ourRobot[3].Status = AgentStatus::Kicking;
+//        }
+        tactics[0] = test3; //for goali
 //        tactics[1] = testStop;
 //        tactics[3] = testStop;
 //        tactics[1] = test3;

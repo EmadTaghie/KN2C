@@ -84,23 +84,28 @@ RobotCommand TacticTest3::getCommand()
 //                    Vector2D intersectRecieve = recieverRay.intersection(goalieChangedLine);
                     Vector2D intersectAtacker = Attackerray.intersection(goalieChangedLine);
                     int oppReciever;
+                    Vector2D intersectRecieve1, intersectRecieve2, intersectRecieve3, intersectRecieve4;
                     for(index = 0; index < 8; index++){
                         if(wm->kn->findNearestOppositeTo(wm->ball.pos.loc).isEmpty()) oppReciever = 0;
-                        else    oppReciever = wm->kn->findNearestOppositeTo(wm->ball.pos.loc).takeFirst();
+                        else    oppReciever = wm->kn->findNearestOppositeTo(wm->ball.pos.loc).takeAt(1);
                         Circle2D oppRobotCircle(wm->oppRobot[oppReciever].pos.loc, 200);
-                        Vector2D intersectRecieve1, intersectRecieve2;
+                        oppRobotCircle.intersection(Attackerray, &intersectRecieve3, &intersectRecieve4);
                         oppRobotCircle.intersection(ballMoveMent, &intersectRecieve1, &intersectRecieve2);
-                        if(intersectRecieve1 != Vector2D(0,0) || intersectRecieve2 != Vector2D(0,0)){
+                        if(intersectRecieve1 != Vector2D(0,0) || intersectRecieve2 != Vector2D(0,0) || intersectRecieve3 != Vector2D(0,0) || intersectRecieve4 != Vector2D(0,0)){
                             break;
                         }
+                        else oppReciever = -1;
                     }
+                    qDebug() << "oppReciever = " << oppReciever;
                     Ray2D recieverRay(wm->oppRobot[oppReciever].pos.loc, AngleDeg::rad2deg(wm->oppRobot[oppReciever].pos.dir));
-                    Vector2D intersectRecieve = recieverRay.intersection(goalieChangedLine);
+                    Line2D recieveLine(Vector2D(Field::MinX + 500, 500), Vector2D(Field::MinX + 500, 400));
+                    Vector2D intersectRecieve = recieverRay.intersection(recieveLine);
                     if(oppReciever == nearestOpp) oppReciever = -1;
-                    if(intersectRecieve.y > point1.y && intersectRecieve.y < point2.y && oppReciever != -1){
-                        Line2D stopLine(wm->oppRobot[oppReciever].pos.loc, AngleDeg::rad2deg(wm->oppRobot[oppReciever].pos.dir));
-                        Vector2D stopPoint = (stopLine.intersection(goalieChangedLine));
-                        if(stopPoint.y < point1.y && stopPoint.y > point2.y) target = stopPoint;
+                    if(intersectRecieve.y > Field::ourGoalPost_R.y && intersectRecieve.y < Field::ourGoalPost_L.y && oppReciever != -1){
+//                        Line2D stopLine(wm->oppRobot[oppReciever].pos.loc, AngleDeg::rad2deg(wm->oppRobot[oppReciever].pos.dir));
+//                        Vector2D stopPoint = (stopLine.intersection(recieveLine));
+//                        if(stopPoint.y > Field::ourGoalPost_R.y && stopPoint.y < Field::ourGoalPost_L.y ) target = stopPoint;
+                        target = intersectRecieve;
                         rc.fin_pos.dir = (wm->oppRobot[oppReciever].pos.loc - wm->ourRobot[id].pos.loc).dir().radian();
                         qDebug() <<"joloye zard ro gereft reciever = "<<oppReciever<<" x = "<<wm->ourRobot[oppReciever].pos.loc.x<<" y = "<<wm->oppRobot[oppReciever].pos.loc.y;
                     }
@@ -122,7 +127,7 @@ RobotCommand TacticTest3::getCommand()
                         sectionLengthY = (point1.y - point2.y)/20;
                         sectionLengthX = (point1.x - point2.x)/20;
                         for(i = 0; i < 20; i++) goalPoints[i][0] = point2 + Vector2D(sectionLengthX*i, sectionLengthY*i);
-                        for(index = 1; index < 5; index++)
+                        for(index = 1; index < 9; index++)
                             for(i = 0; i < 20; i++){
                                 Ray2D targetRay(wm->ball.pos.loc, goalPoints[i][0]);
                                 Circle2D RobotCircle(wm->ourRobot[index].pos.loc, ROBOT_RADIUS);
@@ -155,6 +160,5 @@ RobotCommand TacticTest3::getCommand()
                 rc.fin_pos.loc = target;
                 qDebug() <<"target x = "<<target.x<<" y = "<<target.y;
                 rc.maxSpeed = speed;
-
     return rc;
 }
